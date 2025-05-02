@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,13 @@ public class UrlServiceImpl implements UrlService {
 
     @Override
     public UrlResponseDto createUrl(UrlCreateDto dto) {
+        if (urlRepository.existsUrlByAlias(dto.getCustomAlias())){
+            throw new RuntimeException("Already Exists");
+        }
+        if(dto.getCustomAlias().isEmpty()){
+            String randomAlias = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+            dto.setCustomAlias(randomAlias);
+        }
         return mapToDto(urlRepository.save(mapToEntity(dto)));
     }
 
@@ -32,6 +40,13 @@ public class UrlServiceImpl implements UrlService {
         PageRequest pageRequest = PageRequest.of(page,size,Sort.by(sortBy).descending());
         Page<Url> urls = urlRepository.findGetAllUrl(keyword,pageRequest);
         return urls.map(this::mapToDto);
+    }
+
+    @Override
+    public UrlResponseDto updateClicks(String alias) {
+        Url url = urlRepository.findByAlias(alias).orElseThrow(()->new RuntimeException("Not Found"));
+        url.setClicks(url.getClicks() + 1);
+        return mapToDto(urlRepository.save(url));
     }
 
 

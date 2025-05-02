@@ -18,4 +18,6 @@ public interface UrlRepository  extends JpaRepository<Url, String> {
             "LOWER(u.alias) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(u.originalUrl) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     Page<Url> findGetAllUrl(@Param("keyword") String keyword, Pageable pageRequest);
+
+    boolean existsUrlByAlias(String alias);
 }

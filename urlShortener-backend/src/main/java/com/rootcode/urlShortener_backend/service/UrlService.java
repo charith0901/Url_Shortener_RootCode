@@ -13,4 +13,6 @@ public interface UrlService {
     UrlResponseDto createUrl(UrlCreateDto dto);
 
     Page<UrlResponseDto> getAllUrl(int page, int size, String sortBy, String keyword);
+
+    UrlResponseDto updateClicks(String alias);
 }

@@ -9,7 +9,7 @@ import {
 } from '../table/Table';
 import { Search, Plus, Edit, Trash } from 'lucide-react';
 import apiFetch from '../../api/apiFetch';
-import CreateUrl from '../CreateUrl/CreateUrl';
+import { Link } from 'react-router-dom';
 
 const URLShortenerDashboard = () => {
   const [data, setData] = useState({
@@ -78,7 +78,13 @@ const URLShortenerDashboard = () => {
 
 return (
         <div className="w-full max-w-7xl mx-auto p-6 space-y-6">
+          <div>
+                <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">URL Shortener Dashboard</h1>
+              </div>
+              
+              
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              
                 <div className="relative flex-1 max-w-md">
                     <Search 
                         className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" 
@@ -111,14 +117,14 @@ return (
                     <option value="clicks">Clicks</option>
                     <option value="expiresAt">Expiration</option>
                 </select>
-
+                <Link to={"/create"}>
                 <button
-                    onClick={handleNewURL}
                     className="h-11 px-6 flex items-center gap-2"
                 >
                     <Plus size={16} />
                     New URL
                 </button>
+                </Link>
             </div>
 
             <div className="rounded-xl overflow-hidden border border-gray-200/50 dark:border-gray-800/50 

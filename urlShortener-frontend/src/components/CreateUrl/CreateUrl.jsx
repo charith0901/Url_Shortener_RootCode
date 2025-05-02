@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, X, Copy, AlertCircle } from 'lucide-react';
 import apiFetch from '../../api/apiFetch';
+import { useNavigate } from 'react-router-dom';
 
 export default function CreateUrl() {
   const [longUrl, setLongUrl] = useState('');
@@ -10,8 +11,9 @@ export default function CreateUrl() {
   const [isOpen, setIsOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [shortenedUrl, setShortenedUrl] = useState('');
+  const navigate = useNavigate();
 
-  // Mock API call to shorten URL
+
   const shortenUrl = async () => {
     if (!longUrl) {
       setError('Invalid URL');
@@ -22,7 +24,6 @@ export default function CreateUrl() {
     setError('');
 
     try {
-        console.log(expiration)
       const response = await apiFetch.post('/url', {
         originalUrl: longUrl,
         customAlias: customAlias,
@@ -49,7 +50,10 @@ export default function CreateUrl() {
     -1
   ];
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    navigate('/');
+    return null;
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">

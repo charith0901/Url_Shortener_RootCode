@@ -50,12 +50,13 @@ public class UrlController {
                         .build(),HttpStatus.CREATED
         );
     }
-    @PatchMapping("/upadteClicks/{alias}")
+    @PatchMapping("/updateClicks/{alias}")
     public ResponseEntity<StandardResponseDto> updateClicks(@PathVariable String alias){
         return new ResponseEntity<>(
                 StandardResponseDto.builder()
                         .status(200)
                         .message("updated")
+                        .data(urlService.updateClicks(alias))
                         .build(),HttpStatus.OK
         );
     }

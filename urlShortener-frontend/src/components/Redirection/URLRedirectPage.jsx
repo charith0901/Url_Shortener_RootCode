@@ -1,15 +1,27 @@
 import { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import apiFetch from '../../api/apiFetch';
 
 export default function URLRedirectPage() {
   const [secondsLeft, setSecondsLeft] = useState(3);
   const [isRedirecting, setIsRedirecting] = useState(true);
+  const [redirectData, setRedirectData] = useState({ alias: '', originalUrl: '' });
+  const { shortUrl } = useParams();
 
-  // Mock data for the redirect
-  const redirectData = {
-    shortUrl: 'https://short.ly/abc123',
-    destination: 'https://example.com/very-long-destination-url'
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await apiFetch.patch(`/url/updateClicks/${shortUrl}`);
+        setRedirectData(response.data.data);
+        console.log('Redirect data:', response.data);
+      } catch (error) {
+        console.error('Error fetching redirect data:', error);
+        setIsRedirecting(false);
+      }
+    };
+    fetchData();
+  }, [shortUrl]);
 
   useEffect(() => {
     let timer;
@@ -18,24 +30,22 @@ export default function URLRedirectPage() {
       timer = setTimeout(() => {
         setSecondsLeft(secondsLeft - 1);
       }, 1000);
-    } else if (isRedirecting && secondsLeft === 0) {
-      // In a real app, this would redirect to the destination URL
-      console.log(`Redirecting to: ${redirectData.destination}`);
-      // window.location.href = redirectData.destination;
+    } else if (isRedirecting && secondsLeft === 0 && redirectData.originalUrl) {
+      // Redirect to the destination URL
+      window.location.href = redirectData.originalUrl;
     }
     
     return () => {
       clearTimeout(timer);
     };
-  }, [secondsLeft, isRedirecting, redirectData.destination]);
-  
+  }, [secondsLeft, isRedirecting, redirectData.originalUrl]);
+
   const handleCancel = () => {
     setIsRedirecting(false);
-    setSecondsLeft(0);
   };
-  
+
   // Calculate progress percentage
-  const progressPercentage = ((3 - secondsLeft) / 3) * 100;
+  const progressPercentage = isRedirecting ? ((3 - secondsLeft) / 3) * 100 : 100;
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -45,28 +55,32 @@ export default function URLRedirectPage() {
         </div>
         
         <h1 className="text-xl font-medium text-center text-gray-800 mb-6">
-          You are being redirected...
+          {isRedirecting ? 'You are being redirected...' : 'Redirect cancelled'}
         </h1>
         
         <div className="bg-gray-100 rounded-md p-4 mb-6">
           <div className="mb-2">
             <div className="text-sm text-gray-500 mb-1">Short URL</div>
-            <div className="text-sm font-medium text-gray-700">{redirectData.shortUrl}</div>
+            <div className="text-sm font-medium text-gray-700">{shortUrl}</div>
           </div>
           
           <div>
             <div className="text-sm text-gray-500 mb-1">Destination</div>
-            <div className="text-sm font-medium text-gray-700 break-all">{redirectData.destination}</div>
+            <div className="text-sm font-medium text-gray-700 break-all">
+              {redirectData.originalUrl || 'Loading...'}
+            </div>
           </div>
         </div>
         
         <div className="mb-4">
           <div className="text-sm text-center text-gray-500 mb-2">
-            {isRedirecting ? `Redirecting in ${secondsLeft} second${secondsLeft !== 1 ? 's' : ''}...` : 'Redirect cancelled'}
+            {isRedirecting 
+              ? `Redirecting in ${secondsLeft} second${secondsLeft !== 1 ? 's' : ''}...` 
+              : 'Redirect cancelled'}
           </div>
           
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div 
+            <div
               className="h-full bg-gray-700 rounded-full transition-all duration-1000 ease-linear"
               style={{ width: `${progressPercentage}%` }}
             ></div>
