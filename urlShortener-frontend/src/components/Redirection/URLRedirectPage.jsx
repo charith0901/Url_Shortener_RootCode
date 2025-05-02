@@ -7,6 +7,7 @@ export default function URLRedirectPage() {
   const [secondsLeft, setSecondsLeft] = useState(3);
   const [isRedirecting, setIsRedirecting] = useState(true);
   const [redirectData, setRedirectData] = useState({ alias: '', originalUrl: '' });
+  const [error, setError] = useState(null);
   const { shortUrl } = useParams();
 
   useEffect(() => {
@@ -17,6 +18,7 @@ export default function URLRedirectPage() {
         console.log('Redirect data:', response.data);
       } catch (error) {
         console.error('Error fetching redirect data:', error);
+        setError(error.response.data.message || 'Failed to fetch redirect data. Please try again later.');
         setIsRedirecting(false);
       }
     };
@@ -53,7 +55,11 @@ export default function URLRedirectPage() {
         <div className="flex justify-center mb-4">
           <ArrowRight size={24} className="text-gray-500" />
         </div>
-        
+        {error && (
+          <div className="mb-4 text-red-500 text-center">
+            {error}
+          </div>
+        )}
         <h1 className="text-xl font-medium text-center text-gray-800 mb-6">
           {isRedirecting ? 'You are being redirected...' : 'Redirect cancelled'}
         </h1>

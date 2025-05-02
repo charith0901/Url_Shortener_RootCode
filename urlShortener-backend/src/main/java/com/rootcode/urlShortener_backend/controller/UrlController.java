@@ -60,4 +60,14 @@ public class UrlController {
                         .build(),HttpStatus.OK
         );
     }
+    @DeleteMapping("/{alias}")
+    public ResponseEntity<StandardResponseDto> deleteUrl(@PathVariable String alias){
+        return new ResponseEntity<>(
+                StandardResponseDto.builder()
+                        .status(200)
+                        .message("deleted")
+                        .data(urlService.deleteUrl(alias))
+                        .build(),HttpStatus.OK
+        );
+    }
 }

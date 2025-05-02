@@ -28,7 +28,7 @@ public class UrlServiceImpl implements UrlService {
         if (urlRepository.existsUrlByAlias(dto.getCustomAlias())){
             throw new RuntimeException("Already Exists");
         }
-        if(dto.getCustomAlias().isEmpty()){
+        if(dto.getCustomAlias() == null){
             String randomAlias = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
             dto.setCustomAlias(randomAlias);
         }
@@ -45,8 +45,18 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public UrlResponseDto updateClicks(String alias) {
         Url url = urlRepository.findByAlias(alias).orElseThrow(()->new RuntimeException("Not Found"));
+        if(isExpired(url.getExpiresAt())){
+            throw new RuntimeException("Expired");
+        }
         url.setClicks(url.getClicks() + 1);
         return mapToDto(urlRepository.save(url));
+    }
+
+    @Override
+    public Object deleteUrl(String alias) {
+        Url url = urlRepository.findByAlias(alias).orElseThrow(()->new RuntimeException("Not Found"));
+        urlRepository.delete(url);
+        return null;
     }
 
 
@@ -66,5 +76,8 @@ public class UrlServiceImpl implements UrlService {
                 .alias(dto.getCustomAlias())
                 .clicks(0)
                 .build();
+    }
+    public boolean isExpired(LocalDateTime expiresAt) {
+        return LocalDateTime.now().isAfter(expiresAt);
     }
 }

@@ -73,7 +73,16 @@ const URLShortenerDashboard = () => {
   };
 
   const handleDelete = (id) => {
-    console.log(`Delete URL with ID: ${id}`);
+    const confirmDelete = window.confirm('Are you sure you want to delete this URL?');
+    if (confirmDelete) {
+      apiFetch.delete(`/url/${id}`)
+        .then(() => {
+          fetchData();
+        })
+        .catch((error) => {
+          console.error('Error deleting URL:', error);
+        });
+    }
   };
 
 return (
@@ -171,7 +180,7 @@ return (
                                                 <Edit size={16} />
                                             </button>
                                             <button 
-                                                onClick={() => handleDelete(url.id)}
+                                                onClick={() => handleDelete(url.alias)}
                                                 className="text-gray-500 hover:text-gray-700"
                                             >
                                                 <Trash size={16} />

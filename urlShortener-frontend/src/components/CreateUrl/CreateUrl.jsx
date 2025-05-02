@@ -26,13 +26,13 @@ export default function CreateUrl() {
     try {
       const response = await apiFetch.post('/url', {
         originalUrl: longUrl,
-        customAlias: customAlias,
+        customAlias: customAlias === "" ? null : customAlias,
         expireDuration: expiration
       });
       
       setShortenedUrl(response.data.data.alias);
     } catch (err) {
-      setError('Failed to shorten URL');
+      setError(err.response.data.message || 'An error occurred while shortening the URL.');
       console.error(err);
     } finally {
       setIsLoading(false);
