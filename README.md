@@ -30,7 +30,7 @@ Before you begin, ensure you have the following installed:
 1. Clone the repository:
 
 ```bash
-git clone  (https://github.com/charith0901/Url_Shortener_RootCode)
+git clone  https://github.com/charith0901/Url_Shortener_RootCode
 cd urlShortener-backend
 ```
 
